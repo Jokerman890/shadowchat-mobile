@@ -1,0 +1,57 @@
+name: CodeQL
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    - cron: '27 5 * * 1'
+
+jobs:
+  detect-languages:
+    name: Detect analyzable languages
+    runs-on: ubuntu-latest
+    outputs:
+      has_rust: ${{ steps.detect.outputs.has_rust }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: detect
+        run: |
+          if find . -name '*.rs' -not -path './.git/*' | grep -q .; then
+            echo "has_rust=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_rust=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  analyze-actions:
+    name: Analyze (actions)
+    needs: detect-languages
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: actions
+      - uses: github/codeql-action/analyze@v3
+
+  analyze-rust:
+    name: Analyze (rust)
+    needs: detect-languages
+    if: needs.detect-languages.outputs.has_rust == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: rust
+      - uses: github/codeql-action/autobuild@v3
+      - uses: github/codeql-action/analyze@v3

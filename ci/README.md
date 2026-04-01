@@ -45,3 +45,9 @@ Run the same entrypoints locally:
 ```
 
 These scripts are intentionally conservative and avoid guessing missing platform projects.
+
+## Code scanning guardrail
+
+GitHub CodeQL is configured in `.github/workflows/codeql.yml` to always analyze GitHub Actions and to analyze Rust only when `.rs` files are present.
+
+This prevents the `no source code seen during build` failure for Rust in repository phases where `core/` has not been implemented yet.
