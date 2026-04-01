@@ -301,3 +301,11 @@ The first coding slice should be small but real:
 - prepare session restore entry point
 
 This creates a usable, testable path without prematurely building the entire messenger.
+
+## Slice 1 Status Update (2026-04-01)
+Implemented baseline executable auth/session slice with:
+- Rust core crate (`core/shadowchat-core`) and uniFFI contract surface.
+- Username normalization/validation contract and tests per ADR-002.
+- iOS SwiftUI auth shell with optional phone input, Keychain-backed session secret abstraction, and redacted logger helper.
+- Android Compose auth shell with optional phone input, Keystore-backed session secret abstraction, and redacted logger helper.
+- Room-list entry-point contract implemented as a stub boundary only.

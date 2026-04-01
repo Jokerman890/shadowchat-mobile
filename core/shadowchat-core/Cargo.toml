@@ -1,0 +1,15 @@
+[package]
+name = "shadowchat_core"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[dependencies]
+uniffi = { version = "0.28", features = ["tokio"] }
+unicode-normalization = "0.1"
+thiserror = "2"
+
+[dev-dependencies]
+pretty_assertions = "1"
