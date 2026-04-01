@@ -1,0 +1,62 @@
+name: CodeQL
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    - cron: '27 5 * * 1'
+
+jobs:
+  detect-targets:
+    name: Detect analyzable targets
+    runs-on: ubuntu-latest
+    outputs:
+      has_ios_project: ${{ steps.detect.outputs.has_ios_project }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: detect
+        run: |
+          if find apps/ios -maxdepth 1 \( -name '*.xcodeproj' -o -name '*.xcworkspace' \) | grep -q .; then
+            echo "has_ios_project=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_ios_project=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  analyze-actions:
+    name: Analyze (actions)
+    needs: detect-targets
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: actions
+      - uses: github/codeql-action/analyze@v3
+
+  analyze-swift:
+    name: Analyze (swift)
+    needs: detect-targets
+    if: needs.detect-targets.outputs.has_ios_project == 'true'
+    runs-on: macos-15
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    env:
+      DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+      IOS_SIMULATOR_DESTINATION: platform=iOS Simulator,name=iPhone 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: swift
+          build-mode: manual
+      - name: Build iOS project for CodeQL
+        run: ./scripts/ci/run_ios_codeql_build.sh
+      - uses: github/codeql-action/analyze@v3
