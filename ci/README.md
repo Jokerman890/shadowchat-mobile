@@ -48,6 +48,9 @@ These scripts are intentionally conservative and avoid guessing missing platform
 
 ## Code scanning guardrail
 
-GitHub CodeQL is configured in `.github/workflows/codeql.yml` to always analyze GitHub Actions and to analyze Rust only when `.rs` files are present.
+GitHub CodeQL is configured in `.github/workflows/codeql.yml` to:
+- always analyze GitHub Actions
+- run Swift analysis only when an iOS Xcode workspace/project exists under `apps/ios`
+- use **manual** build mode for Swift via `scripts/ci/run_ios_codeql_build.sh`
 
-This prevents the `no source code seen during build` failure for Rust in repository phases where `core/` has not been implemented yet.
+This avoids automatic Swift autobuild failures and keeps scanning aligned with actual repository contents.

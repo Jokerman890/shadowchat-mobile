@@ -10,6 +10,8 @@ This directory is reserved for development, validation, and automation scripts.
   - Runs simulator build + tests when a scheme exists
 - `scripts/ci/run_android_validation.sh`
   - Runs `assembleDebug`, `test`, and `lint` in `apps/android` when `gradlew` exists
+- `scripts/ci/run_ios_codeql_build.sh`
+  - Manual iOS build entrypoint for CodeQL Swift analysis (build-only, no tests)
 
 Examples of future contents:
 - bootstrap helpers
