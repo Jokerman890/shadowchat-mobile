@@ -1,0 +1,3 @@
+[workspace]
+members = ["shadowchat-core"]
+resolver = "2"
