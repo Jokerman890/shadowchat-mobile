@@ -1,0 +1,56 @@
+name: Cross-Platform Validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  ios-validation:
+    name: iOS Simulator Build + Tests
+    runs-on: macos-15
+    env:
+      DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+      IOS_SIMULATOR_DESTINATION: platform=iOS Simulator,name=iPhone 16
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify Xcode toolchain
+        run: |
+          echo "DEVELOPER_DIR=${DEVELOPER_DIR}"
+          xcode-select -p
+          xcodebuild -version
+
+      - name: Run iOS validation
+        run: ./scripts/ci/run_ios_validation.sh
+
+  android-validation:
+    name: Android assembleDebug + test + lint
+    runs-on: ubuntu-latest
+    env:
+      JAVA_VERSION: '17'
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+      ANDROID_HOME: /usr/local/lib/android/sdk
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Verify Android toolchain
+        run: |
+          echo "ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT}"
+          java -version
+          sdkmanager --version
+
+      - name: Run Android validation
+        run: ./scripts/ci/run_android_validation.sh
