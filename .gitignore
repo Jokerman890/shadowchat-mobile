@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Xcode / SwiftPM
+DerivedData/
+.build/
+.swiftpm/
+Package.resolved.user
+
+# Android / Gradle
+**/.gradle/
+**/build/
+local.properties
+
+# IDEs
+.idea/
+.vscode/
+*.iml
